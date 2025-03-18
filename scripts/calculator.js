@@ -1,3 +1,3 @@
-let calculator = new CalcController();
+window.calculator = new CalcController();
 
 console.log(calculator);
