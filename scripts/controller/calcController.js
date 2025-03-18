@@ -6,13 +6,44 @@ class CalcController {
     this._locale = 'pt-BR';
     this.currentDate;
     this.initialize();
+    this.initButtonsEvents();
   }
 
   initialize() {
+    this.setDisplayDateTime();
+
     setInterval(() => {
-      this.displayDate = this.currentDate.toLocaleDateString(this._locale);
-      this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+      this.setDisplayDateTime();
     }, 1000);
+  }
+
+  setDisplayDateTime() {
+    this.displayDate = this.currentDate.toLocaleDateString(this._locale, {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    });
+    this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+  }
+
+  addEventListenerAll(element, events, fn) {
+    events.split(' ').forEach((event) => {
+      element.addEventListener(event, fn, false);
+    });
+  }
+
+  initButtonsEvents() {
+    let buttons = document.querySelectorAll('#buttons > g, #parts > g');
+
+    buttons.forEach((btn) => {
+      this.addEventListenerAll(btn, 'click drag', () => {
+        console.log(btn.className.baseVal.replace('btn-', ''));
+      });
+
+      this.addEventListenerAll(btn, 'mouseover mouseup mousedown', (e) => {
+        btn.computedStyleMap.cursor = 'pointer';
+      });
+    });
   }
 
   get displayCalc() {
