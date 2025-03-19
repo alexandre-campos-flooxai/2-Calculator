@@ -1,8 +1,11 @@
 class CalcController {
   constructor() {
+    this._lastOperator = ' ';
+    this._lastNumber = '';
+
     this._operation = [];
     this._displayCalcEl = document.querySelector('#display');
-    this._dataEl = document.querySelector('#data');
+    this._dateEl = document.querySelector('#data');
     this._timeEl = document.querySelector('#hora');
     this._locale = 'pt-BR';
     this.currentDate;
@@ -67,14 +70,20 @@ class CalcController {
     }
   }
 
+  getResult() {
+    return eval(this._operation.join(''));
+  }
+
   calc() {
     let last = '';
 
     if (this._operation.length > 3) {
       last = this._operation.pop();
+
+      this._lastNumber = this.getResult();
     }
 
-    let result = eval(this._operation.join(''));
+    let result = this.getResult();
 
     if (last == '%') {
       result /= 100;
@@ -89,15 +98,20 @@ class CalcController {
     this.setLastNumberToDisplay();
   }
 
-  setLastNumberToDisplay() {
-    let lastNumber;
+  getLastItem(isOperator = true) {
+    let lastItem;
 
     for (let i = this._operation.length - 1; i >= 0; i--) {
-      if (!this.isOperator(this._operation[i])) {
-        lastNumber = this._operation[i];
+      if (this.isOperator(this._operation[i]) == isOperator) {
+        lastItem = this._operation[i];
         break;
       }
     }
+    return lastItem;
+  }
+
+  setLastNumberToDisplay() {
+    let lastNumber = this.getLastItem(false);
 
     if (!lastNumber) lastNumber = 0;
 
@@ -109,7 +123,6 @@ class CalcController {
       //string
       if (this.isOperator(value)) {
         this.setLastOperation(value);
-        setLastNumberToDisplay();
       } else if (isNaN(value)) {
         console.log('Outro valor' + value);
       } else {
@@ -162,6 +175,7 @@ class CalcController {
         break;
 
       case 'igual':
+        this.calc();
         break;
 
       case 'ponto':
@@ -182,7 +196,7 @@ class CalcController {
         break;
 
       default:
-        this.setError;
+        this.setError();
         break;
     }
   }
@@ -212,11 +226,11 @@ class CalcController {
   }
 
   get displayDate() {
-    return this._dataEl.innerHTML;
+    return this._dateEl.innerHTML;
   }
 
   set displayDate(date) {
-    this._dataEl.innerHTML = date;
+    this._dateEl.innerHTML = date;
   }
 
   get displayTime() {
@@ -232,6 +246,6 @@ class CalcController {
   }
 
   set currentDate(date) {
-    this.currentDate = date;
+    this._currentDate = date;
   }
 }
